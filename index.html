@@ -1,16 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Second Brain — Autonomous AI Edge Skill</title>
-    <meta name="description" content="Self-evolving autonomous agent skill for Google AI Edge Gallery. Runs 100% offline on Gemma-4.">
-    <script>
-        // Redirect to the SKILL.md file for AI Edge Gallery skill loading
-        window.location.href = 'https://raw.githubusercontent.com/uussnn/second-brain/main/SKILL.md';
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Второй Мозг с Gog Workspace — on-device AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .hero-bg { background: linear-gradient(135deg, #18181b 0%, #27272a 100%); }
+  </style>
 </head>
-<body>
-    <p>Redirecting to <a href="https://github.com/uussnn/second-brain">Second Brain Agent Skill</a>...</p>
+<body class="bg-zinc-950 text-zinc-100">
+
+  <!-- Hero -->
+  <section class="hero-bg py-24">
+    <div class="max-w-5xl mx-auto px-6 text-center">
+      <div class="flex justify-center mb-6">
+        <span class="text-7xl">🧠</span>
+        <span class="text-7xl ml-4">🟢</span>
+      </div>
+      <h1 class="text-5xl md:text-6xl font-bold mb-4">Второй Мозг с Gog Workspace</h1>
+      <p class="text-2xl text-zinc-400 mb-8">Твой личный on-device ИИ, который знает тебя лучше, чем ты сам</p>
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="https://github.com/uussnn/second-brain" 
+           class="bg-emerald-600 hover:bg-emerald-500 px-8 py-4 rounded-2xl font-semibold text-lg flex items-center justify-center gap-3">
+          <i class="fa-brands fa-github"></i> Перейти в репозиторий
+        </a>
+        <a href="#install" 
+           class="bg-zinc-800 hover:bg-zinc-700 px-8 py-4 rounded-2xl font-semibold text-lg">
+          Как установить
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Преимущества -->
+  <section class="py-20 bg-zinc-900">
+    <div class="max-w-5xl mx-auto px-6">
+      <h2 class="text-4xl font-bold text-center mb-12">Почему Второй Мозг — это будущее</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-zinc-800 p-8 rounded-3xl">
+          <div class="text-4xl mb-4">🔒</div>
+          <h3 class="text-2xl font-semibold mb-3">Полная приватность</h3>
+          <p class="text-zinc-400">Всё работает на твоём устройстве. Никаких облачных сервисов и передачи данных.</p>
+        </div>
+        <div class="bg-zinc-800 p-8 rounded-3xl">
+          <div class="text-4xl mb-4">🧩</div>
+          <h3 class="text-2xl font-semibold mb-3">Глубокий Zettelkasten</h3>
+          <p class="text-zinc-400">Автоматическое создание атомарных заметок и эволюционирующих MOCs.</p>
+        </div>
+        <div class="bg-zinc-800 p-8 rounded-3xl">
+          <div class="text-4xl mb-4">📸</div>
+          <h3 class="text-2xl font-semibold mb-3">Мультимодальность</h3>
+          <p class="text-zinc-400">Анализирует скриншоты Gmail, Calendar, Drive и фото досок.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ключевые возможности -->
+  <section class="py-20">
+    <div class="max-w-5xl mx-auto px-6">
+      <h2 class="text-4xl font-bold text-center mb-12">Что умеет Второй Мозг</h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="space-y-8">
+          <div class="flex gap-6">
+            <div class="text-4xl">📝</div>
+            <div>
+              <h3 class="text-xl font-semibold">Атомарный Zettelkasten</h3>
+              <p class="text-zinc-400">Автоматическое создание связных заметок и эволюционирующих карт знаний (MOCs).</p>
+            </div>
+          </div>
+          <div class="flex gap-6">
+            <div class="text-4xl">📧</div>
+            <div>
+              <h3 class="text-xl font-semibold">Gog Workspace</h3>
+              <p class="text-zinc-400">Анализ Gmail, Calendar, Drive и Docs через текст и скриншоты с автоматическим переносом в Zettelkasten.</p>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-8">
+          <div class="flex gap-6">
+            <div class="text-4xl">🚀</div>
+            <div>
+              <h3 class="text-xl font-semibold">Proactive Evolution</h3>
+              <p class="text-zinc-400">Самостоятельный анализ истории и предложение улучшений (Randomized Safe Mutations).</p>
+            </div>
+          </div>
+          <div class="flex gap-6">
+            <div class="text-4xl">🧬</div>
+            <div>
+              <h3 class="text-xl font-semibold">Глубокая персонализация</h3>
+              <p class="text-zinc-400">User Correction Loop, long-term memory и Adaptive Response Style.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Установка -->
+  <section id="install" class="py-20 bg-zinc-900">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h2 class="text-4xl font-bold mb-8">Установка за 3 минуты</h2>
+      <div class="bg-zinc-800 rounded-3xl p-10 text-left max-w-2xl mx-auto">
+        <ol class="space-y-6 text-lg">
+          <li class="flex gap-4">
+            <span class="bg-emerald-600 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">1</span>
+            <div>Скачай репозиторий</div>
+          </li>
+          <li class="flex gap-4">
+            <span class="bg-emerald-600 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">2</span>
+            <div>В Google AI Edge Gallery → Skill Manager → Import local skill</div>
+          </li>
+          <li class="flex gap-4">
+            <span class="bg-emerald-600 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">3</span>
+            <div>Выбери папку <code>second-brain</code> и модель Gemma-4-E4B-it</div>
+          </li>
+          <li class="flex gap-4">
+            <span class="bg-emerald-600 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">4</span>
+            <div>Напиши в чат: <strong>активируй второй мозг</strong></div>
+          </li>
+        </ol>
+      </div>
+      <p class="mt-8 text-emerald-400 font-medium">Готово! Навык начнёт сразу учиться под тебя.</p>
+    </div>
+  </section>
+
+  <!-- Призыв к действию -->
+  <section class="py-20 text-center">
+    <div class="max-w-2xl mx-auto px-6">
+      <h2 class="text-4xl font-bold mb-6">Готов начать?</h2>
+      <p class="text-xl text-zinc-400 mb-10">Сделай первый шаг к своему настоящему Второму Мозгу уже сегодня.</p>
+      <a href="https://github.com/uussnn/second-brain" 
+         class="inline-flex items-center gap-3 bg-emerald-600 hover:bg-emerald-500 text-white px-10 py-5 rounded-3xl text-xl font-semibold">
+        <i class="fa-brands fa-github text-2xl"></i>
+        Перейти в репозиторий и установить
+      </a>
+    </div>
+  </section>
+
+  <footer class="py-12 text-center text-zinc-500 text-sm">
+    MIT License • Создано с помощью Grok (xAI)
+  </footer>
+
 </body>
 </html>
