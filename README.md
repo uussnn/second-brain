@@ -98,20 +98,33 @@ Below is a real example of what Second Brain produces for the prompt:
 
 ---
 
-## ⚡ Quick Start Commands
+## ⚡ Core Commands
 
 Once the skill is active, try these to explore its capabilities:
 
-| Command | What happens |
-|---|---|
-| `"morning briefing"` | Auto-scans Gmail + Calendar, no prompt needed |
-| `"show dashboard"` | Generates interactive Mermaid.js Evolution Map |
-| `"rollback mutation"` | Reverts the last prompt change |
-| `"compress memory"` | Manually triggers Memory Distillation |
-| `"export capsule [Topic]"` | Exports a PII-stripped knowledge capsule as JSON |
-| `"import capsule"` | Imports a community capsule (with safety validation) |
-| `"architecture review"` | Deep analysis of the agent's own rules and weaknesses |
-| `"add goal [your goal]"` | Registers a new life goal into `goals.json` |
+**📊 Reviews & Planning**
+- `"daily review"` / `"weekly review"`
+- `"what's on my plate today"`
+
+**🧠 Zettelkasten & Notes**
+- `"MOC review"` / `"update MOCs"`
+- `"show MOC [topic]"`
+- `"save to Second Brain"` (to capture thoughts or images)
+
+**🗂 Memory & Preferences**
+- `"what did I say about [X]"`
+- `"show my preferences"`
+- `"add goal [your goal]"`
+
+**🧬 Evolution & Maintenance**
+- `"show dashboard"` (interactive Mermaid.js map)
+- `"personal review"` (agent analyzes its own rules)
+- `"compress memory"`
+- `"export Capsule"` / `"import Capsule"`
+
+**📧 Gog Workspace**
+- `"triage my inbox"`
+- `"check my calendar"`
 
 ---
 
