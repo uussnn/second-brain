@@ -9,6 +9,8 @@
   <style>
     body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     .hero-bg { background: linear-gradient(135deg, #18181b 0%, #27272a 100%); }
+    .screenshot { transition: transform 0.3s ease; }
+    .screenshot:hover { transform: scale(1.03); }
   </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100">
@@ -36,15 +38,60 @@
     </div>
   </section>
 
-  <!-- Преимущества -->
+  <!-- Демо / Скриншоты -->
   <section class="py-20 bg-zinc-900">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-4xl font-bold text-center mb-12">Как это выглядит в работе</h2>
+      
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Скриншот 1 -->
+        <div class="card bg-zinc-800 rounded-3xl overflow-hidden">
+          <img src="screenshots/dashboard.jpg" alt="Evolution Map дашборд" class="screenshot w-full">
+          <div class="p-6">
+            <h3 class="font-semibold text-xl mb-2">Интерактивный Evolution Map</h3>
+            <p class="text-zinc-400">Визуализация роста GDI-lite, дерева событий, Genes и Personal Layer</p>
+          </div>
+        </div>
+
+        <!-- Скриншот 2 -->
+        <div class="card bg-zinc-800 rounded-3xl overflow-hidden">
+          <img src="screenshots/gmail-processing.jpg" alt="Обработка Gmail" class="screenshot w-full">
+          <div class="p-6">
+            <h3 class="font-semibold text-xl mb-2">Анализ Gmail со скриншота</h3>
+            <p class="text-zinc-400">Автоматическая атомизация писем и перенос в Zettelkasten</p>
+          </div>
+        </div>
+
+        <!-- Скриншот 3 -->
+        <div class="card bg-zinc-800 rounded-3xl overflow-hidden">
+          <img src="screenshots/moc-example.jpg" alt="MOC в работе" class="screenshot w-full">
+          <div class="p-6">
+            <h3 class="font-semibold text-xl mb-2">Эволюционирующие MOCs</h3>
+            <p class="text-zinc-400">Карты знаний, которые сами улучшаются и структурируются</p>
+          </div>
+        </div>
+
+        <!-- Скриншот 4 -->
+        <div class="card bg-zinc-800 rounded-3xl overflow-hidden">
+          <img src="screenshots/personal-review.jpg" alt="Personal Review" class="screenshot w-full">
+          <div class="p-6">
+            <h3 class="font-semibold text-xl mb-2">Еженедельный Personal Review</h3>
+            <p class="text-zinc-400">Анализ твоих предпочтений и предложений по улучшению</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Преимущества -->
+  <section class="py-20">
     <div class="max-w-5xl mx-auto px-6">
       <h2 class="text-4xl font-bold text-center mb-12">Почему Второй Мозг — это будущее</h2>
       <div class="grid md:grid-cols-3 gap-8">
         <div class="bg-zinc-800 p-8 rounded-3xl">
           <div class="text-4xl mb-4">🔒</div>
           <h3 class="text-2xl font-semibold mb-3">Полная приватность</h3>
-          <p class="text-zinc-400">Всё работает на твоём устройстве. Никаких облачных сервисов и передачи данных.</p>
+          <p class="text-zinc-400">Всё работает на твоём устройстве. Никаких облачных сервисов.</p>
         </div>
         <div class="bg-zinc-800 p-8 rounded-3xl">
           <div class="text-4xl mb-4">🧩</div>
@@ -55,47 +102,6 @@
           <div class="text-4xl mb-4">📸</div>
           <h3 class="text-2xl font-semibold mb-3">Мультимодальность</h3>
           <p class="text-zinc-400">Анализирует скриншоты Gmail, Calendar, Drive и фото досок.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Ключевые возможности -->
-  <section class="py-20">
-    <div class="max-w-5xl mx-auto px-6">
-      <h2 class="text-4xl font-bold text-center mb-12">Что умеет Второй Мозг</h2>
-      <div class="grid md:grid-cols-2 gap-8">
-        <div class="space-y-8">
-          <div class="flex gap-6">
-            <div class="text-4xl">📝</div>
-            <div>
-              <h3 class="text-xl font-semibold">Атомарный Zettelkasten</h3>
-              <p class="text-zinc-400">Автоматическое создание связных заметок и эволюционирующих карт знаний (MOCs).</p>
-            </div>
-          </div>
-          <div class="flex gap-6">
-            <div class="text-4xl">📧</div>
-            <div>
-              <h3 class="text-xl font-semibold">Gog Workspace</h3>
-              <p class="text-zinc-400">Анализ Gmail, Calendar, Drive и Docs через текст и скриншоты с автоматическим переносом в Zettelkasten.</p>
-            </div>
-          </div>
-        </div>
-        <div class="space-y-8">
-          <div class="flex gap-6">
-            <div class="text-4xl">🚀</div>
-            <div>
-              <h3 class="text-xl font-semibold">Proactive Evolution</h3>
-              <p class="text-zinc-400">Самостоятельный анализ истории и предложение улучшений (Randomized Safe Mutations).</p>
-            </div>
-          </div>
-          <div class="flex gap-6">
-            <div class="text-4xl">🧬</div>
-            <div>
-              <h3 class="text-xl font-semibold">Глубокая персонализация</h3>
-              <p class="text-zinc-400">User Correction Loop, long-term memory и Adaptive Response Style.</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
