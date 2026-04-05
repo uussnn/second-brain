@@ -4,7 +4,7 @@ description: Autonomous Second Brain Agent v3.3. Включает многоша
 version: 3.3.0
 metadata:
   author: Community Contributor (Second Brain Team)
-  homepage: https://github.com/YOUR_USERNAME/second-brain
+  homepage: https://github.com/uussnn/second-brain
   recommended_model: Gemma-4-E4B-it
   tags: [second-brain, agentic, react-planning, tool-use, gog, gep-lite, capsule-sharing, meta-evolution, goal-alignment, memory-distillation]
 ---
