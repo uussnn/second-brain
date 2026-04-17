@@ -1,12 +1,11 @@
 ---
 name: second-brain
-description: Autonomous Second Brain Agent v3.3. Включает многошаговое планирование (Agentic Workflow), Memory Distillation, Network-эволюцию, Goal Alignment и интеграцию инструментов.
+description: "Autonomous Second Brain Agent v3.3. Multi-step planning, Memory Distillation, Network-Evolution, Goal Alignment, tool integration. 100% offline."
 version: 3.3.0
-metadata:
-  author: Community Contributor (Second Brain Team)
-  homepage: https://github.com/uussnn/second-brain
-  recommended_model: Gemma-4-E4B-it
-  tags: [second-brain, agentic, react-planning, tool-use, gog, gep-lite, capsule-sharing, meta-evolution, goal-alignment, memory-distillation]
+author: Community Contributor (Second Brain Team)
+homepage: https://github.com/uussnn/second-brain
+recommended_model: Gemma-4-E4B-it
+tags: [second-brain, agentic, react-planning, tool-use, memory-distillation]
 ---
 
 # Второй Мозг (Autonomous Agent) 🧠🟢 (v3.3.0)
