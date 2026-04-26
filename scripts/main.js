@@ -36,7 +36,7 @@ function processMemoryDistillation() {
 }
 
 function runAgentCycle(inputParams) {
-    console.log(`🧠 Запуск цикла Второго Мозга (v3.3.0)`);
+    console.log(`🧠 Запуск цикла Второго Мозга (v4.0.0)`);
     checkAndInitializeDir();
     processMemoryDistillation();
 

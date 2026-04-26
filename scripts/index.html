@@ -3,21 +3,27 @@
 <head>
     <meta charset="utf-8">
     <title>Second Brain Bridge</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <!-- C-2 FIX: Локальная оффлайн-зависимость вместо CDN Cloudflare -->
+    <script src="vendor/sql-wasm.js"></script>
 </head>
 <body>
     <script>
-        console.log("Second Brain WebView Bridge Initialized");
+        console.log("Second Brain WebView Bridge v4.0.0 Initialized");
         let db;
 
+        // =====================================================================
         // Система Persistent Memory: Сохранение БД в IndexedDB
+        // C-4 FIX: Полная обработка ошибок с reject + onerror
+        // =====================================================================
         async function saveDatabase(dbBinary) {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 const request = indexedDB.open("SecondBrainDB", 1);
+                request.onerror = () => reject(new Error("[IndexedDB] Failed to open database for writing."));
                 request.onupgradeneeded = (e) => e.target.result.createObjectStore("sqlite", { keyPath: "id" });
                 request.onsuccess = (e) => {
                     const idb = e.target.result;
                     const tx = idb.transaction("sqlite", "readwrite");
+                    tx.onerror = () => reject(new Error("[IndexedDB] Write transaction failed (possible storage overflow)."));
                     tx.objectStore("sqlite").put({ id: 1, data: dbBinary });
                     tx.oncomplete = () => resolve();
                 };
@@ -25,12 +31,16 @@
         }
 
         // Система Persistent Memory: Загрузка БД
+        // C-4 FIX: Полная обработка ошибок с reject + onerror
         async function loadDatabase() {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 const request = indexedDB.open("SecondBrainDB", 1);
+                request.onerror = () => reject(new Error("[IndexedDB] Failed to open database for reading."));
                 request.onupgradeneeded = (e) => e.target.result.createObjectStore("sqlite", { keyPath: "id" });
                 request.onsuccess = (e) => {
-                    const tx = e.target.result.transaction("sqlite", "readonly");
+                    const idb = e.target.result;
+                    const tx = idb.transaction("sqlite", "readonly");
+                    tx.onerror = () => reject(new Error("[IndexedDB] Read transaction failed."));
                     const getReq = tx.objectStore("sqlite").get(1);
                     getReq.onsuccess = () => resolve(getReq.result ? getReq.result.data : null);
                     getReq.onerror = () => resolve(null);
@@ -39,62 +49,82 @@
         }
 
         // Инициализация
-        initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}` }).then(async function(SQL) {
+        // C-2 FIX: Локальный путь к WASM-бинарнику вместо CDN
+        initSqlJs({ locateFile: file => `vendor/${file}` }).then(async function(SQL) {
             const savedData = await loadDatabase();
             db = savedData ? new SQL.Database(savedData) : new SQL.Database();
             db.run("CREATE TABLE IF NOT EXISTS memory (id INTEGER PRIMARY KEY, category TEXT, content TEXT, tags TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP);");
             console.log(savedData ? "Persistent Memory restored." : "New DB created.");
+        }).catch(function(err) {
+            console.error("[FATAL] SQLite WASM initialization failed:", err);
         });
 
+        // =====================================================================
         // Глобальный оркестратор инструментов
+        // =====================================================================
         window.onToolCall = async function(toolName, parameters) {
             if (!db) return JSON.stringify({ status: "error", message: "Система памяти еще инициализируется." });
 
             try {
                 const args = typeof parameters === 'string' ? JSON.parse(parameters) : parameters;
 
+                // ==== save_to_para ====
                 if (toolName === 'save_to_para') {
                     const tagsStr = args.tags && Array.isArray(args.tags) ? args.tags.join(',') : '';
                     db.run("INSERT INTO memory (category, content, tags) VALUES (?,?,?)", [args.category, args.content, tagsStr]);
-                    await saveDatabase(db.export()); // Синхронизируем с диском
+                    try {
+                        await saveDatabase(db.export()); // Синхронизируем с диском
+                    } catch (persistErr) {
+                        // C-4: Данные сохранены в in-memory DB, но не персистированы
+                        return JSON.stringify({ status: "warning", message: `Данные сохранены в RAM, но ОШИБКА ПЕРСИСТЕНЦИИ: ${persistErr.message}. Данные могут быть потеряны при закрытии.` });
+                    }
                     return JSON.stringify({ status: "success", message: `Успешно сохранено в ${args.category}` });
                 }
 
+                // ==== retrieve_memory ====
+                // C-1 FIX: Параметризированный SQL-запрос. Raw-интерполяция полностью удалена.
                 if (toolName === 'retrieve_memory') {
-                    const catFilter = (args.category_filter && args.category_filter !== "All") ? `AND category = '${args.category_filter}'` : "";
                     const searchTerm = `%${args.query}%`;
-                    
-                    // Гибридный линейный поиск (контент + теги)
-                    const results = db.exec(`SELECT category, content, timestamp FROM memory WHERE (content LIKE ? OR tags LIKE ?) ${catFilter} ORDER BY timestamp DESC LIMIT 5`, [searchTerm, searchTerm]);
+                    const useCatFilter = (args.category_filter && args.category_filter !== "All");
+                    const sql = useCatFilter
+                        ? "SELECT category, content, timestamp FROM memory WHERE (content LIKE ? OR tags LIKE ?) AND category = ? ORDER BY timestamp DESC LIMIT 5"
+                        : "SELECT category, content, timestamp FROM memory WHERE (content LIKE ? OR tags LIKE ?) ORDER BY timestamp DESC LIMIT 5";
+                    const params = useCatFilter
+                        ? [searchTerm, searchTerm, args.category_filter]
+                        : [searchTerm, searchTerm];
+
+                    const results = db.exec(sql, params);
 
                     if (results.length === 0) return JSON.stringify({ status: "success", data: "В памяти ничего не найдено по этому запросу." });
-                    
+
                     const rows = results[0].values.map(row => ({ category: row[0], content: row[1], date: row[2] }));
                     return JSON.stringify({ status: "success", results: rows });
                 }
 
+                // ==== create_calendar_event ====
+                // W-3 FIX: Каноническая форма Intent URI с action=INSERT и type=vnd.android.cursor.dir/event
                 if (toolName === 'create_calendar_event') {
                     try {
                         const beginTime = new Date(args.startTime).getTime();
-                        const endTime = args.endTime ? new Date(args.endTime).getTime() : beginTime + 3600000; // По умолчанию 1 час
-                        
-                        // Формируем Android Intent URI для открытия системного календаря
-                        const intentUri = `intent://com.android.calendar/events#Intent;scheme=content;type=vnd.android.cursor.item/event;S.title=${encodeURIComponent(args.title)};S.description=${encodeURIComponent(args.description || '')};l.beginTime=${beginTime};l.endTime=${endTime};end`;
+                        const endTime = args.endTime ? new Date(args.endTime).getTime() : beginTime + 3600000;
 
-                        // Вызываем интент в текущем окне (WebView передаст его в ОС)
+                        const intentUri = `intent:#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/event;S.title=${encodeURIComponent(args.title)};S.description=${encodeURIComponent(args.description || '')};l.beginTime=${beginTime};l.endTime=${endTime};end`;
+
                         window.open(intentUri, '_top');
-                        
+
                         return JSON.stringify({ status: "success", message: `Событие "${args.title}" отправлено в системный календарь.` });
                     } catch (e) {
                         return JSON.stringify({ status: "error", message: "Ошибка вызова календаря: " + e.toString() });
                     }
                 }
 
+                // ==== create_contact ====
+                // W-4 FIX: Полные системные ключи Android Contacts Provider для корректного предзаполнения полей
                 if (toolName === 'create_contact') {
                     try {
-                        const name = args.name ? `S.name=${encodeURIComponent(args.name)};` : '';
-                        const phone = args.phone ? `S.phone=${encodeURIComponent(args.phone)};` : '';
-                        const email = args.email ? `S.email=${encodeURIComponent(args.email)};` : '';
+                        const name = args.name ? `S.android.provider.Contacts.Intents.Insert.NAME=${encodeURIComponent(args.name)};` : '';
+                        const phone = args.phone ? `S.android.provider.Contacts.Intents.Insert.PHONE=${encodeURIComponent(args.phone)};` : '';
+                        const email = args.email ? `S.android.provider.Contacts.Intents.Insert.EMAIL=${encodeURIComponent(args.email)};` : '';
                         const intentUri = `intent:#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/contact;${name}${phone}${email}end`;
                         window.open(intentUri, '_top');
                         return JSON.stringify({ status: "success", message: `Открыто окно создания контакта: ${args.name}` });
@@ -103,6 +133,7 @@
                     }
                 }
 
+                // ==== set_alarm ====
                 if (toolName === 'set_alarm') {
                     try {
                         const msg = args.message ? `S.android.intent.extra.alarm.MESSAGE=${encodeURIComponent(args.message)};` : '';
@@ -114,6 +145,7 @@
                     }
                 }
 
+                // ==== send_sms ====
                 if (toolName === 'send_sms') {
                     try {
                         const intentUri = `intent:smsto:${args.phone}#Intent;action=android.intent.action.SENDTO;S.sms_body=${encodeURIComponent(args.message)};end`;
@@ -124,16 +156,14 @@
                     }
                 }
 
+                // ==== device_control ====
                 if (toolName === 'device_control') {
                     try {
                         let intentUri;
                         if (args.action === 'toggle_music') {
-                            // Используем стандартный KeyEvent для переключения медиа (Play/Pause)
                             intentUri = `intent:#Intent;action=android.intent.action.MEDIA_BUTTON;i.android.intent.extra.KEY_EVENT=85;end`;
                         } else if (args.action === 'toggle_flashlight') {
-                            // Фонарик вызывается через внутренний мост приложения, если доступен, 
-                            // либо через эмуляцию интента настроек
-                            intentUri = `intent:#Intent;action=android.settings.DISPLAY_SETTINGS;end`; // Заглушка для перехода в настройки
+                            intentUri = `intent:#Intent;action=android.settings.DISPLAY_SETTINGS;end`;
                         }
                         window.open(intentUri, '_top');
                         return JSON.stringify({ status: "success", message: `Команда ${args.action} отправлена.` });
@@ -141,6 +171,29 @@
                         return JSON.stringify({ status: "error", message: e.toString() });
                     }
                 }
+
+                // ==== evolve_code ====
+                // C-3 FIX: Обработчик для самоэволюции агента.
+                // WebView-песочница не может напрямую писать на диск.
+                // Возвращаем инструкцию для хост-приложения (Gallery) на выполнение мутации.
+                if (toolName === 'evolve_code') {
+                    try {
+                        if (!args.file_path || !args.new_code) {
+                            return JSON.stringify({ status: "error", message: "evolve_code требует file_path и new_code." });
+                        }
+                        return JSON.stringify({
+                            status: "success",
+                            action: "EVOLVE",
+                            file_path: args.file_path,
+                            new_code: args.new_code,
+                            reason: args.reason || "No reason provided.",
+                            message: `Мутация файла "${args.file_path}" подготовлена для хост-приложения.`
+                        });
+                    } catch (e) {
+                        return JSON.stringify({ status: "error", message: "Ошибка evolve_code: " + e.toString() });
+                    }
+                }
+
             } catch (e) {
                 return JSON.stringify({ status: "error", message: e.toString() });
             }
