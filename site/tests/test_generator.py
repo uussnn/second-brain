@@ -135,3 +135,13 @@ def test_undescribed_formula_version_fails(tmp_path, data, settings):
     edit(rating_file(data), lambda d: d["method"].update(formula_version="2.0"))
     with pytest.raises(BuildError, match="2.0"):
         run(tmp_path, data, settings)
+
+
+def test_inactive_tariff_hidden(tmp_path, data, settings):
+    rows = json.loads((data / "tariffs.json").read_text(encoding="utf-8"))
+    rows.append({"code": "legacy", "name": "Архивный тариф", "price_rub": 990, "period": "P1M",
+                 "sku_limit": 10, "is_active": False})
+    (data / "tariffs.json").write_text(json.dumps(rows, ensure_ascii=False), encoding="utf-8")
+    run(tmp_path, data, settings)
+    html = (tmp_path / "dist/pricing/index.html").read_text(encoding="utf-8")
+    assert "Архивный тариф" not in html and "Полный аудит" in html

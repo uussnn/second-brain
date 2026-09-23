@@ -2,6 +2,5 @@
   {"code": "mini_audit", "name": "Мини-аудит", "price_rub": 0, "period": null, "sku_limit": null, "is_active": true},
   {"code": "full_audit", "name": "Полный аудит", "price_rub": 4990.00, "period": null, "sku_limit": null, "is_active": true},
   {"code": "monitoring_m", "name": "Мониторинг", "price_rub": 1990.00, "period": "P1M", "sku_limit": 50, "is_active": true},
-  {"code": "monitoring_y", "name": "Мониторинг, год с предоплатой", "price_rub": 19900.00, "period": "P1Y", "sku_limit": 50, "is_active": true},
-  {"code": "monitoring_old", "name": "Архивный тариф", "price_rub": 990.00, "period": "P1M", "sku_limit": 10, "is_active": false}
+  {"code": "monitoring_y", "name": "Мониторинг, год с предоплатой", "price_rub": 19900.00, "period": "P1Y", "sku_limit": 50, "is_active": true}
 ]

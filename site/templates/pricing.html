@@ -8,7 +8,7 @@
   <thead><tr><th scope="col">Тариф</th><th scope="col">Цена</th><th scope="col">Период</th><th scope="col">Лимит SKU</th></tr></thead>
   <tbody>
   {% for t in tariffs %}
-    <tr><th scope="row">{{ t.name }}</th><td class="num">{{ t.price_rub | rub }}</td><td>{{ t.period | period }}</td><td>{{ ('до ' ~ t.sku_limit) if t.sku_limit else '—' }}</td></tr>
+    <tr><th scope="row">{{ t.name }}</th><td class="num">{{ t.price_rub | rub }}</td><td>{{ '—' if t.price_rub == 0 else (t.period | period) }}</td><td>{{ ('до ' ~ t.sku_limit) if t.sku_limit else '—' }}</td></tr>
   {% endfor %}
   </tbody>
 </table>
