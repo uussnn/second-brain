@@ -15,6 +15,23 @@
 </table>
 </div>
 
+<h2>Веса позиций в формуле доли</h2>
+<p>Доля бренда = сумма весов по всем ответам ÷ число ответов. В каждом ответе бренд получает вес по позиции своего первого упоминания; нет в ответе — 0.</p>
+{% for f in formulas %}
+<div class="table-wrap">
+<table>
+  <caption>Формула {{ f.version }}</caption>
+  <thead><tr><th scope="col">Позиция в ответе</th><th scope="col">Вес</th></tr></thead>
+  <tbody>
+  {% for w in f.position_weights %}
+    <tr><th scope="row">{{ loop.index }}</th><td class="num">{{ fmt.num(w) }}</td></tr>
+  {% endfor %}
+    <tr><th scope="row">{{ f.position_weights | length + 1 }} и ниже</th><td class="num">{{ fmt.num(f.tail_weight) }}</td></tr>
+  </tbody>
+</table>
+</div>
+{% endfor %}
+
 <h2>Вопросы и ответы</h2>
 <div class="faq">
 {% for q, a in faq %}

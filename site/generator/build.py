@@ -20,7 +20,7 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from . import fmt
 from .config import SITE_ROOT, ConfigError, Settings, load_settings
-from .data import Category, DataError, Rating, load_categories, load_tariffs
+from .data import Category, DataError, Formula, Rating, load_categories, load_formulas, load_tariffs
 
 AI_CRAWLERS = ["YandexBot", "Googlebot", "Bingbot", "PerplexityBot", "OAI-SearchBot",
                "ChatGPT-User", "GPTBot", "ClaudeBot", "Claude-SearchBot"]
@@ -76,7 +76,15 @@ def rating_summary(r: Rating) -> str:
     return " ".join(parts)
 
 
-def method_faq(cats: list[Category]) -> list[tuple[str, str]]:
+def weights_text(f: Formula) -> str:
+    parts = [f"{i}-я позиция — {fmt.num(w)}" for i, w in enumerate(f.position_weights, 1)]
+    n = len(f.position_weights)
+    tail = (f"{n + 1}-я и ниже — {fmt.num(f.tail_weight)}" if f.tail_weight
+            else f"ниже {n}-й позиции упоминания не учитываются")
+    return ", ".join(parts + [tail])
+
+
+def method_faq(cats: list[Category], formulas: dict[str, Formula]) -> list[tuple[str, str]]:
     latest = [c.latest for c in cats]
     models = sorted({m for r in latest for m in r.method["models"]})
     runs = sorted({r.method["runs"] for r in latest})
@@ -101,9 +109,11 @@ def method_faq(cats: list[Category]) -> list[tuple[str, str]]:
          f"запрос задаётся несколько раз (сейчас — {j(map(str, runs))}), и в расчёт идут все ответы."),
         ("Как считается доля в ответах ИИ?",
          "Из каждого ответа извлекаются упомянутые бренды и их позиции, каждое упоминание сверяется "
-         "с исходным текстом ответа. Доля бренда — сумма весов его упоминаний, делённая на число "
-         "ответов; упоминание выше в ответе весит больше. Точные веса закреплены в версии формулы. "
-         "Изменение за неделю — разница долей в процентных пунктах."),
+         "с исходным текстом ответа. В каждом ответе бренд получает вес по позиции своего первого "
+         "упоминания, если бренда в ответе нет — 0. Доля бренда — сумма этих весов по всем ответам, "
+         "делённая на число ответов. "
+         + " ".join(f"Веса в формуле {v}: {weights_text(formulas[v])}." for v in versions)
+         + " Изменение за неделю — разница долей в процентных пунктах."),
         ("Что такое версии и можно ли сравнивать недели?",
          f"Наборы запросов, формула и извлечение упоминаний имеют версии. Новая версия не "
          f"переписывает старые замеры, а каждая страница рейтинга указывает версию формулы "
@@ -191,7 +201,8 @@ def copy_static(out: Path) -> str:
     return hashlib.sha256(css.read_bytes()).hexdigest()[:10]
 
 
-def collect_pages(s: Settings, cats: list[Category], tariffs) -> list[Page]:
+def collect_pages(s: Settings, cats: list[Category], tariffs,
+                  formulas: dict[str, Formula]) -> list[Page]:
     latest_date = max(c.latest.measured_at for c in cats)
     pages: list[Page] = []
     example = cats[0].latest
@@ -227,11 +238,12 @@ def collect_pages(s: Settings, cats: list[Category], tariffs) -> list[Page]:
                      "is_latest": is_current},
                     jsonld=[breadcrumbs(s, crumbs)] + rating_jsonld(s, r, path, summary)))
 
-    faq = method_faq(cats)
+    faq = method_faq(cats, formulas)
     pages.append(Page(
         "/method/", "method.html", "Методология: как измеряется доля в ответах ИИ",
         "Типы запросов, модели с веб-поиском, три прогона, формула доли в ответах ИИ и версии.",
-        latest_date, {"faq": faq, "cats": cats},
+        latest_date, {"faq": faq, "cats": cats,
+                      "formulas": [formulas[v] for v in sorted(formulas)]},
         jsonld=[{"@type": "FAQPage", "mainEntity": [
             {"@type": "Question", "name": q,
              "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}]))
@@ -334,7 +346,13 @@ def build(out: Path, settings: Settings, data_dir: Path | None = None,
     lock = lock or SITE_ROOT / "archive_urls.lock"
     cats = load_categories(data_dir)
     tariffs = load_tariffs(data_dir / "tariffs.json")
-    pages = collect_pages(settings, cats, tariffs)
+    formulas = load_formulas(data_dir / "formulas.json")
+    for c in cats:
+        for r in c.weeks:
+            if str(r.method["formula_version"]) not in formulas:
+                raise BuildError(f"{r.source}: формула {r.method['formula_version']} "
+                                 "не описана в formulas.json")
+    pages = collect_pages(settings, cats, tariffs, formulas)
 
     archive = [r.archive_path for c in cats for r in c.weeks]
     check_and_update_lock(lock, archive, update_lock)

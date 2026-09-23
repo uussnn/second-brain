@@ -3,6 +3,7 @@
 Формат повторяет будущую выгрузку из PostgreSQL:
   ratings/<площадка>/<категория>/<ГГГГ-Wнн>.json — из core.scores (+ core.categories,
       core.measurements); share = core.scores.share, change — разница с прошлой неделей;
+  formulas.json — веса позиций для каждой версии формулы (core.scores.formula_version);
   tariffs.json — строки billing.tariffs; period — interval в ISO 8601
       (SET intervalstyle = 'iso_8601'), NULL для разовых.
 Чтобы подключить базу, достаточно заменить функции load_* — шаблоны не меняются.
@@ -196,4 +197,33 @@ def load_tariffs(path: Path) -> list[Tariff]:
                  f"period {r['period']!r}: ожидается NULL или P1M/P3M/P6M/P1Y")
         out.append(Tariff(r["code"], r["name"], Decimal(str(r["price_rub"])), r["period"],
                           r["sku_limit"], bool(r["is_active"])))
+    return out
+
+
+@dataclass
+class Formula:
+    version: str
+    position_weights: list[float]  # вес упоминания на 1-й, 2-й, ... позиции в ответе
+    tail_weight: float             # вес для всех позиций ниже перечисленных
+
+    def weight(self, position: int) -> float:
+        if position <= len(self.position_weights):
+            return self.position_weights[position - 1]
+        return self.tail_weight
+
+
+def load_formulas(path: Path) -> dict[str, Formula]:
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    _require(isinstance(raw, dict) and raw, path, "ожидается объект {версия: параметры}")
+    out: dict[str, Formula] = {}
+    for version, f in raw.items():
+        w = f.get("position_weights")
+        tail = f.get("tail_weight")
+        _require(isinstance(w, list) and w and all(_num(x) and 0 < x <= 1 for x in w), path,
+                 f"{version}: position_weights — непустой список чисел в (0, 1]")
+        _require(w[0] == 1, path, f"{version}: вес первой позиции должен быть 1")
+        _require(all(a >= b for a, b in zip(w, w[1:])), path, f"{version}: веса не должны расти")
+        _require(_num(tail) and 0 <= tail <= w[-1], path,
+                 f"{version}: tail_weight в [0, вес последней позиции]")
+        out[version] = Formula(version, [float(x) for x in w], float(tail))
     return out

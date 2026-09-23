@@ -78,3 +78,8 @@ def plural(n: int, one: str, few: str, many: str) -> str:
     n10, n100 = n % 10, n % 100
     word = one if n10 == 1 and n100 != 11 else few if 2 <= n10 <= 4 and not 12 <= n100 <= 14 else many
     return f"{n}{NBSP}{word}"
+
+
+def num(x: float) -> str:
+    """1.0 -> '1', 0.7 -> '0,7'"""
+    return f"{x:g}".replace(".", ",")

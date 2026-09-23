@@ -43,6 +43,10 @@ make up          # поднять Caddy (docker-compose.site.yml), HTTPS для 
    а её адрес допишется в `site/archive_urls.lock`.
 3. `make test` и закоммитьте JSON вместе с `archive_urls.lock`.
 
+Версия из `method.formula_version` должна быть описана в `site/data/formulas.json`:
+веса позиций (`position_weights`, первая всегда 1, дальше не растут) и `tail_weight` для
+всех позиций ниже. Новые веса — новая версия формулы; старые версии из файла не удаляются.
+
 Архивные адреса вечные: если адрес из `archive_urls.lock` не появился в сборке (например,
 удалили JSON недели), сборка падает. Старые JSON не редактируются.
 
@@ -61,6 +65,7 @@ e-mail). Тестовые данные в репозитории — тольк�
 | `method` | число `core.queries` в наборе, `runs_per_query`, `core.ai_models.model_code`, `core.scores.formula_version` |
 | `brands[].brand`, `share` | `core.brands.canonical_name`, `core.scores.share` |
 | `brands[].change` | `share` минус `share` того же бренда в прошлом замере категории |
+| `formulas.json` | параметры версий `core.scores.formula_version` (таблицы пока нет, веса хранятся в файле) |
 | `tariffs.json` | строки `billing.tariffs`; `period` выгружается с `SET intervalstyle = 'iso_8601'` |
 
 Есть два пути, шаблоны не меняются ни в одном:
