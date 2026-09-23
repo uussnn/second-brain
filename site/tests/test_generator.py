@@ -111,3 +111,27 @@ def test_summary_is_short_and_from_data():
             sentences = re.split(r"(?<=\.)\s+(?=[А-ЯЁ])", s)
             assert 2 <= len(sentences) <= 3, s
             assert r.brands[0].brand in s
+
+
+def test_formula_weights():
+    from generator.data import load_formulas
+    f = load_formulas(SITE_ROOT / "data/formulas.json")["1.0"]
+    assert [f.weight(i) for i in range(1, 7)] == [1.0, 0.7, 0.5, 0.5, 0.5, 0.5]
+    assert fmt.num(1.0) == "1" and fmt.num(0.7) == "0,7"
+
+
+@pytest.mark.parametrize("formulas, message", [
+    ({"1.0": {"position_weights": [0.9, 0.7], "tail_weight": 0.5}}, "первой позиции"),
+    ({"1.0": {"position_weights": [1, 0.5, 0.7], "tail_weight": 0.5}}, "не должны расти"),
+    ({"1.0": {"position_weights": [1, 0.7, 0.5], "tail_weight": 0.6}}, "tail_weight"),
+])
+def test_bad_formula_fails(tmp_path, data, settings, formulas, message):
+    (data / "formulas.json").write_text(json.dumps(formulas), encoding="utf-8")
+    with pytest.raises(DataError, match=message):
+        run(tmp_path, data, settings)
+
+
+def test_undescribed_formula_version_fails(tmp_path, data, settings):
+    edit(rating_file(data), lambda d: d["method"].update(formula_version="2.0"))
+    with pytest.raises(BuildError, match="2.0"):
+        run(tmp_path, data, settings)

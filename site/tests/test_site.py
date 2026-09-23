@@ -272,3 +272,17 @@ def test_pricing_from_data(dist):
     text = parse(page(dist, "/pricing/")).plain
     for t in tariffs:
         assert (t["name"] in text) == t["is_active"], t["code"]
+
+
+def test_method_shows_position_weights(dist):
+    formulas = json.loads((SITE_ROOT / "data/formulas.json").read_text())
+    html = page(dist, "/method/").read_text(encoding="utf-8")
+    text = parse(page(dist, "/method/")).plain
+    faq = json.loads(parse(page(dist, "/method/")).jsonld[0])
+    answers = " ".join(n["acceptedAnswer"]["text"] for node in faq["@graph"] if node["@type"] == "FAQPage"
+                       for n in node["mainEntity"])
+    for version, f in formulas.items():
+        assert f"Формула {version}" in text
+        for w in f["position_weights"] + [f["tail_weight"]]:
+            assert f">{fmt.num(w)}<" in html
+        assert f"Веса в формуле {version}: 1-я позиция — 1, 2-я позиция — 0,7" in answers
