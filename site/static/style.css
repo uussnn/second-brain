@@ -87,7 +87,7 @@ thead th { font-size: .8rem; font-weight: 600; color: var(--muted); text-transfo
 tbody th { font-weight: 600; }
 .num { text-align: right; white-space: nowrap; }
 td.num:first-child { width: 3rem; }
-.share { display: flex; align-items: center; gap: .75rem; min-width: 10rem; }
+.share { display: flex; align-items: center; justify-content: flex-end; gap: .75rem; }
 .share .num { min-width: 4.5rem; }
 .bar { flex: 1; height: .5rem; border-radius: 99px; background: linear-gradient(90deg, var(--accent) var(--w, 0%), var(--bar) var(--w, 0%)); }
 .chg--up { color: var(--up); }
@@ -103,8 +103,16 @@ td.num:first-child { width: 3rem; }
 .foot__in { padding-block: 1.5rem; }
 .foot a { color: var(--muted); }
 
+/* Мобильные: таблица рейтинга помещается без горизонтальной прокрутки. */
+@media (max-width: 39.99rem) {
+  th, td { padding: .5rem .5rem; }
+  thead th { font-size: .7rem; letter-spacing: 0; }
+  .rating .bar { display: none; }
+  .share .num { min-width: 0; }
+}
 @media (min-width: 40rem) {
   body { font-size: 17px; }
+  .share { min-width: 10rem; }
 }
 
 /* Анимация — только поверх готового контента и только если пользователь не против. */

@@ -18,7 +18,7 @@
     <tr>
       <td class="num">{{ b.rank }}</td>
       <th scope="row">{{ b.brand }}</th>
-      <td class="share"><span class="bar w{{ (b.share * 100) | round | int }}" aria-hidden="true"></span><span class="num">{{ b.share | pct }}</span></td>
+      <td><div class="share"><span class="bar w{{ (b.share * 100) | round | int }}" aria-hidden="true"></span><span class="num">{{ b.share | pct }}</span></div></td>
       <td class="num chg chg--{{ b.change | trend }}">{{ b.change | pp }}</td>
     </tr>
   {% endfor %}
