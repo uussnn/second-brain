@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Методология</h1>
+<p class="lead">Как мы измеряем долю бренда в ответах ИИ-ассистентов: какие вопросы задаём, каким моделям, сколько раз и как считаем результат.</p>
+
+<h2>Параметры последних замеров</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th scope="col">Категория</th><th scope="col">Неделя</th><th scope="col">Запросов</th><th scope="col">Прогонов</th><th scope="col">Модели</th><th scope="col">Формула</th></tr></thead>
+  <tbody>
+  {% for c in cats %}
+    <tr><th scope="row"><a href="{{ c.path }}">{{ c.name }}</a></th><td>{{ c.latest.week }}</td><td class="num">{{ c.latest.method.queries }}</td><td class="num">{{ c.latest.method.runs }}</td><td>{{ c.latest.method.models | join(', ') }}</td><td>{{ c.latest.method.formula_version }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h2>Вопросы и ответы</h2>
+<div class="faq">
+{% for q, a in faq %}
+  <section>
+    <h3>{{ q }}</h3>
+    <p>{{ a }}</p>
+  </section>
+{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{
+  "category": {
+    "marketplace": "wb",
+    "slug": "spalnye-meshki",
+    "name": "Спальные мешки"
+  },
+  "week": "2026-W38",
+  "measured_at": "2026-09-15",
+  "method": {
+    "queries": 40,
+    "models": [
+      "sonar"
+    ],
+    "runs": 3,
+    "formula_version": "1.0"
+  },
+  "brands": [
+    {
+      "rank": 1,
+      "brand": "Тестбренд К",
+      "share": 0.24,
+      "change": null
+    },
+    {
+      "rank": 2,
+      "brand": "Тестбренд Л",
+      "share": 0.2,
+      "change": null
+    },
+    {
+      "rank": 3,
+      "brand": "Тестбренд М",
+      "share": 0.18,
+      "change": null
+    },
+    {
+      "rank": 4,
+      "brand": "Тестбренд Н",
+      "share": 0.12,
+      "change": null
+    },
+    {
+      "rank": 5,
+      "brand": "Тестбренд О",
+      "share": 0.09,
+      "change": null
+    },
+    {
+      "rank": 6,
+      "brand": "Тестбренд П",
+      "share": 0.07,
+      "change": null
+    }
+  ]
+}

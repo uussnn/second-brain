@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import bot_button, rating_table %}
+{% block content %}
+<nav class="crumbs" aria-label="Навигация"><a href="/">Главная</a> / <a href="/ratings/">Рейтинги</a>{% if not is_current %} / <a href="{{ cat.path }}">{{ cat.name }}</a>{% endif %}</nav>
+<article>
+  <h1>Кого рекомендует ИИ: {{ r.name }} — неделя {{ r.week }}</h1>
+  <p class="lead">{{ summary }}</p>
+  {{ rating_table(r, caption='Доля брендов в ответах ИИ-ассистентов, ' ~ r.name ~ ', ' ~ fmt.range_ru(r.week_start, r.week_end)) }}
+  <p class="meta">
+    Замер: <time datetime="{{ r.measured_at.isoformat() }}">{{ r.measured_at | date_ru }}</time>.
+    {{ fmt.plural(r.method.queries, 'запрос', 'запроса', 'запросов') }} × {{ fmt.plural(r.method.runs, 'прогон', 'прогона', 'прогонов') }}, модели: {{ r.method.models | join(', ') }}, формула {{ r.method.formula_version }}.
+    <a href="/method/">Методология</a>.
+  </p>
+  {% if is_current %}
+  <p class="meta">Постоянная ссылка на эту неделю: <a href="{{ r.archive_path }}">{{ r.archive_path }}</a></p>
+  {% elif not is_latest %}
+  <p class="note">Это архив недели {{ r.week }}. <a href="{{ cat.path }}">Текущий рейтинг категории</a>.</p>
+  {% endif %}
+</article>
+
+{% if cat.weeks | length > 1 %}
+<section>
+  <h2>Архив недель</h2>
+  <ul class="weeks">
+  {% for w in cat.weeks | reverse %}
+    <li>{% if w.week == r.week and not is_current %}<strong>{{ w.week }}</strong>{% else %}<a href="{{ w.archive_path }}">{{ w.week }}</a>{% endif %} · {{ fmt.range_ru(w.week_start, w.week_end) }}</li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="cta">
+  <h2>Есть ли ваш бренд в ответах ИИ?</h2>
+  <p>Бесплатный мини-аудит по запросам категории «{{ r.name }}».</p>
+  {{ bot_button() }}
+</section>
+{% endblock %}

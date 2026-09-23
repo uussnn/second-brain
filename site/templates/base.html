@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page.title }}</title>
+<meta name="description" content="{{ page.description }}">
+<link rel="canonical" href="{{ canonical }}">
+{% if page.noindex %}
+<meta name="robots" content="noindex">
+{% endif %}
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="{{ site.name }}">
+<meta property="og:title" content="{{ page.title }}">
+<meta property="og:description" content="{{ page.description }}">
+<meta property="og:url" content="{{ canonical }}">
+<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/style.css?v={{ css_ver }}">
+<script type="application/ld+json">{{ jsonld | tojson }}</script>
+</head>
+<body>
+<a class="skip" href="#main">К содержанию</a>
+<header class="top">
+  <div class="wrap top__in">
+    <a class="logo" href="/"><img src="/static/icon.svg" alt="" width="28" height="28"><span>{{ site.name }}</span></a>
+    <nav aria-label="Основное меню">
+      <ul>
+        <li><a href="/ratings/"{% if page.path.startswith('/ratings/') %} aria-current="page"{% endif %}>Рейтинги</a></li>
+        <li><a href="/method/"{% if page.path == '/method/' %} aria-current="page"{% endif %}>Методология</a></li>
+        <li><a href="/pricing/"{% if page.path == '/pricing/' %} aria-current="page"{% endif %}>Тарифы</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+{% block content %}{% endblock %}
+</main>
+<footer class="foot">
+  <div class="wrap foot__in">
+    <p>© {{ site.name }}. Рейтинги строятся автоматически по ответам ИИ-ассистентов с веб-поиском.</p>
+    <ul>
+      <li><a href="/method/">Методология</a></li>
+      <li><a href="/offer/">Оферта</a></li>
+      <li><a href="/privacy/">Политика ПДн</a></li>
+      <li><a href="/contacts/">Контакты</a></li>
+      <li><a href="/llms.txt">llms.txt</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>

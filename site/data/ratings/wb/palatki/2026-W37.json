@@ -1,0 +1,61 @@
+{
+  "category": {
+    "marketplace": "wb",
+    "slug": "palatki",
+    "name": "Туристические палатки"
+  },
+  "week": "2026-W37",
+  "measured_at": "2026-09-07",
+  "method": {
+    "queries": 40,
+    "models": [
+      "sonar"
+    ],
+    "runs": 3,
+    "formula_version": "1.0"
+  },
+  "brands": [
+    {
+      "rank": 1,
+      "brand": "Тестбренд А",
+      "share": 0.29,
+      "change": null
+    },
+    {
+      "rank": 2,
+      "brand": "Тестбренд Б",
+      "share": 0.22,
+      "change": null
+    },
+    {
+      "rank": 3,
+      "brand": "Тестбренд В",
+      "share": 0.14,
+      "change": null
+    },
+    {
+      "rank": 4,
+      "brand": "Тестбренд Г",
+      "share": 0.11,
+      "change": null
+    },
+    {
+      "rank": 5,
+      "brand": "Тестбренд Д",
+      "share": 0.08,
+      "change": null
+    },
+    {
+      "rank": 6,
+      "brand": "Тестбренд Е",
+      "share": 0.06,
+      "change": null
+    },
+    {
+      "rank": 7,
+      "brand": "Тестбренд Ж",
+      "share": 0.04,
+      "change": null
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import bot_button, rating_table %}
+{% block content %}
+<section class="hero">
+  <h1>Кого рекомендует ИИ, когда покупатель ищет товар</h1>
+  <p class="lead">{{ site.name }} измеряет, как часто ИИ-ассистенты с веб-поиском — Perplexity, ChatGPT и другие — называют бренды селлеров Wildberries в ответах покупателям. Главная метрика — <strong>доля в ответах ИИ</strong>.</p>
+  {{ bot_button() }}
+</section>
+
+<section>
+  <h2>Как ИИ «видит» бренды</h2>
+  <ol class="steps">
+    <li><strong>Покупатель спрашивает ИИ</strong>, а не листает выдачу: «какую палатку взять на троих до 15 000 ₽».</li>
+    <li><strong>ИИ ищет в сети</strong> и собирает ответ из обзоров, карточек и рейтингов — называет 3–7 брендов.</li>
+    <li><strong>Не попал в ответ — не попал в выбор.</strong> Мы задаём ИИ типовые вопросы покупателей категории много раз и считаем, какую долю ответов занимает каждый бренд.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Пример: {{ example.name }}, неделя {{ example.week }}</h2>
+  <p>{{ example_summary }}</p>
+  {{ rating_table(example, limit=5) }}
+  <p><a href="{{ example.category_path }}">Полный рейтинг категории</a> · <a href="/ratings/">все категории</a> · <a href="/method/">как считаем</a></p>
+</section>
+
+<section class="cta">
+  <h2>Где ваш бренд?</h2>
+  <p>Бесплатный мини-аудит покажет долю вашего бренда в ответах ИИ по запросам категории. Всё общение и оплата — в Telegram-боте.</p>
+  {{ bot_button() }}
+</section>
+{% endblock %}
