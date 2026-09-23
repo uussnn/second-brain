@@ -1,0 +1,3 @@
+Jinja2>=3.1,<4
+pytest>=8
+html5lib>=1.1
