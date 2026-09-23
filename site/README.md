@@ -60,7 +60,7 @@ e-mail). Тестовые данные в репозитории — тольк�
 
 | JSON | Источник в PostgreSQL |
 |---|---|
-| `category.*` | `core.categories` + `core.marketplaces.code` (slug — новое поле или транслитерация `name`) |
+| `category.*` | `core.categories` (`slug`, `name`) + `core.marketplaces.code` |
 | `week`, `measured_at` | `core.measurements` (`kind = 'category'`, `finished_at`) |
 | `method` | число `core.queries` в наборе, `runs_per_query`, `core.ai_models.model_code`, `core.scores.formula_version` |
 | `brands[].brand`, `share` | `core.brands.canonical_name`, `core.scores.share` |

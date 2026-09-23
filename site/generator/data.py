@@ -19,7 +19,7 @@ from decimal import Decimal
 from pathlib import Path
 
 WEEK_RE = re.compile(r"^(\d{4})-W(\d{2})$")
-SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")  # то же правило — CHECK на core.categories.slug
 
 # Признаки персональных данных, которые не должны попасть в публичные рейтинги.
 PD_PATTERNS = [
