@@ -28,9 +28,24 @@ CREATE TABLE core.categories (
   parent_id      bigint REFERENCES core.categories,
   external_id    text,                      -- id категории на площадке
   name           text NOT NULL,
+  -- часть вечного адреса рейтинга /ratings/<площадка>/<slug>/<ГГГГ-Wнн>/; после вставки не меняется
+  slug           text NOT NULL CHECK (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
   is_tracked     boolean NOT NULL DEFAULT false,  -- входит в еженедельный замер
-  UNIQUE (marketplace_id, external_id)
+  UNIQUE (marketplace_id, external_id),
+  UNIQUE (marketplace_id, slug)
 );
+
+-- Адрес архива вечный: slug нельзя изменить после создания категории
+CREATE FUNCTION core.forbid_slug_change() RETURNS trigger AS $$
+BEGIN
+  IF NEW.slug IS DISTINCT FROM OLD.slug THEN
+    RAISE EXCEPTION 'category slug is immutable (%: % -> %)', OLD.id, OLD.slug, NEW.slug;
+  END IF;
+  RETURN NEW;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_slug_immutable BEFORE UPDATE OF slug ON core.categories
+  FOR EACH ROW EXECUTE FUNCTION core.forbid_slug_change();
 
 CREATE TABLE core.brands (
   id             bigserial PRIMARY KEY,
