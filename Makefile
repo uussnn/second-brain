@@ -8,7 +8,7 @@ PORT   ?= 8000
 -include site/settings.env
 export SITE_DOMAIN SITE_NAME TELEGRAM_BOT OWNER_NAME OWNER_INN
 
-.PHONY: build build-prod test serve up clean
+.PHONY: build build-prod test serve up clean test-factory
 
 $(PY): site/requirements.txt
 	$(PYTHON) -m venv $(VENV)
@@ -37,3 +37,10 @@ up:
 
 clean:
 	rm -rf site/dist site/dist.tmp
+
+# Линия (база, бот, воркеры). Интеграционные тесты — на настоящем PostgreSQL 16:
+#   TEST_DATABASE_URL=postgresql://postgres:<пароль>@localhost:55432/postgres make test-factory
+test-factory: $(PY)
+	$(PY) -m pip install -q -r app/requirements-dev.txt
+	@test -n "$(TEST_DATABASE_URL)" || (echo "задайте TEST_DATABASE_URL (см. app/README.md)"; exit 1)
+	TEST_DATABASE_URL="$(TEST_DATABASE_URL)" $(PY) -m pytest app/tests -q
