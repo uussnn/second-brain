@@ -10,3 +10,6 @@ site/settings.env
 .venv/
 __pycache__/
 .pytest_cache/
+
+# Секреты линии (docker-compose.yml)
+.env

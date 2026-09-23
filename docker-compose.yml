@@ -1,0 +1,101 @@
+# База, Telegram-бот и воркеры цехов одной командой:
+#   cp .env.example .env   # заполнить на сервере, в git не хранится
+#   docker compose up -d --build
+# Сайт — отдельно: docker-compose.site.yml.
+
+x-app: &app
+  build: ./app
+  image: geo-factory:latest
+  restart: unless-stopped
+  depends_on:
+    db:
+      condition: service_healthy
+  networks: [factory]
+  mem_limit: 256m
+  read_only: true
+  tmpfs: [/tmp]
+  security_opt: ["no-new-privileges:true"]
+
+x-worker: &worker
+  <<: *app
+  environment: &worker-env
+    DATABASE_URL: postgresql://worker_role:${WORKER_DB_PASSWORD:?}@db:5432/factory
+    AITUNNEL_API_KEY: ${AITUNNEL_API_KEY:-}
+    LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: factory
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?задайте POSTGRES_PASSWORD в .env}
+      BOT_DB_PASSWORD: ${BOT_DB_PASSWORD:?задайте BOT_DB_PASSWORD в .env}
+      WORKER_DB_PASSWORD: ${WORKER_DB_PASSWORD:?задайте WORKER_DB_PASSWORD в .env}
+      TZ: Europe/Moscow
+    # Скрипты инициализации выполняются один раз, на пустом томе pgdata
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./schema_v0_1.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./db/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - ./db/03-roles.sh:/docker-entrypoint-initdb.d/03-roles.sh:ro
+      - ./db/roles.sql:/factory-db/roles.sql:ro
+    # Под 4 ГБ RAM, рядом бот, воркеры и Caddy
+    command: >
+      postgres
+      -c shared_buffers=512MB
+      -c effective_cache_size=1536MB
+      -c work_mem=8MB
+      -c maintenance_work_mem=128MB
+      -c max_connections=50
+      -c log_min_duration_statement=1000
+    # Здорова, только если инициализация дошла до конца: схема, справочники и роли на месте.
+    # Если скрипт инициализации упал, postgres при перезапуске её пропустит — тогда
+    # база останется unhealthy, и бот с воркерами не запустятся.
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          pg_isready -U postgres -d factory &&
+          test "$$(psql -U postgres -d factory -tAc "SELECT (SELECT count(*) FROM line.buffers) > 0
+          AND (SELECT count(*) FROM pg_roles WHERE rolname IN ('bot_role', 'worker_role')) = 2")" = t
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    shm_size: 256m
+    mem_limit: 1536m
+    networks: [factory]
+    # Порт наружу не публикуется: база доступна только контейнерам.
+    # С сервера: docker compose exec db psql -U postgres factory
+
+  bot:
+    <<: *app
+    command: ["python", "-m", "factory.bot"]
+    environment:
+      DATABASE_URL: postgresql://bot_role:${BOT_DB_PASSWORD:?}@db:5432/factory
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:?задайте TELEGRAM_BOT_TOKEN в .env}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+  # Цеха 1, 2, 4, 5, 6. Цех 3 (воронка) — бот.
+  worker-leads:
+    <<: *worker
+    environment: {<<: *worker-env, WORKSHOP: leads, WORKER_ID: leads-1}
+  worker-mini-audit:
+    <<: *worker
+    environment: {<<: *worker-env, WORKSHOP: mini_audit, WORKER_ID: mini_audit-1}
+  worker-sales:
+    <<: *worker
+    environment: {<<: *worker-env, WORKSHOP: sales, WORKER_ID: sales-1}
+  worker-monitoring:
+    <<: *worker
+    environment: {<<: *worker-env, WORKSHOP: monitoring, WORKER_ID: monitoring-1}
+  worker-retention:
+    <<: *worker
+    environment: {<<: *worker-env, WORKSHOP: retention, WORKER_ID: retention-1}
+
+volumes:
+  pgdata:
+
+networks:
+  factory:
