@@ -1,0 +1,28 @@
+{% macro bot_button(label='Получить бесплатный мини-аудит в Telegram') %}
+{% if site.bot_url %}
+<a class="btn" href="{{ site.bot_url }}" rel="noopener">{{ label }}</a>
+{% else %}
+<span class="btn btn--off">{{ label }} (бот ещё не подключён)</span>
+{% endif %}
+{% endmacro %}
+
+{% macro rating_table(r, limit=None, caption=None) %}
+<div class="table-wrap">
+<table class="rating">
+  {% if caption %}<caption>{{ caption }}</caption>{% endif %}
+  <thead>
+    <tr><th scope="col">Место</th><th scope="col">Бренд</th><th scope="col">Доля в ответах ИИ</th><th scope="col">Изменение за неделю</th></tr>
+  </thead>
+  <tbody>
+  {% for b in (r.brands[:limit] if limit else r.brands) %}
+    <tr>
+      <td class="num">{{ b.rank }}</td>
+      <th scope="row">{{ b.brand }}</th>
+      <td><div class="share"><span class="bar w{{ (b.share * 100) | round | int }}" aria-hidden="true"></span><span class="num">{{ b.share | pct }}</span></div></td>
+      <td class="num chg chg--{{ b.change | trend }}">{{ b.change | pp }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endmacro %}

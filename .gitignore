@@ -3,3 +3,10 @@
 node_modules/
 .DS_Store
 Thumbs.db
+
+# GEO-audit site
+site/dist/
+site/settings.env
+.venv/
+__pycache__/
+.pytest_cache/

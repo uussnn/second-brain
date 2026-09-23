@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_macros.html" import bot_button %}
+{% block content %}
+<h1>Тарифы</h1>
+<p class="lead">Оплата вперёд, в Telegram-боте. Начните с бесплатного мини-аудита.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th scope="col">Тариф</th><th scope="col">Цена</th><th scope="col">Период</th><th scope="col">Лимит SKU</th></tr></thead>
+  <tbody>
+  {% for t in tariffs %}
+    <tr><th scope="row">{{ t.name }}</th><td class="num">{{ t.price_rub | rub }}</td><td>{{ t.period | period }}</td><td>{{ ('до ' ~ t.sku_limit) if t.sku_limit else '—' }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p>{{ bot_button() }}</p>
+<p class="meta">Условия — в <a href="/offer/">публичной оферте</a>.</p>
+{% endblock %}

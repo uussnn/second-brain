@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from "_macros.html" import bot_button %}
+{% block content %}
+<h1>Контакты</h1>
+<dl class="contacts">
+  <dt>Исполнитель</dt>
+  <dd>{% if site.owner_name %}{{ site.owner_name }}, плательщик налога на профессиональный доход (самозанятый){% else %}не задано в настройках{% endif %}</dd>
+  <dt>ИНН</dt>
+  <dd>{{ site.owner_inn or 'не задано в настройках' }}</dd>
+  <dt>Связь</dt>
+  <dd>{% if site.bot_url %}<a href="{{ site.bot_url }}" rel="noopener">@{{ site.telegram_bot }}</a> в Telegram{% else %}Telegram-бот ещё не подключён{% endif %}</dd>
+</dl>
+{% endblock %}

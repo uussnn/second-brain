@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Рейтинги: кого рекомендует ИИ</h1>
+<p class="lead">Еженедельные рейтинги брендов по доле в ответах ИИ-ассистентов с веб-поиском. Архив каждой недели доступен по постоянному адресу.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th scope="col">Категория</th><th scope="col">Площадка</th><th scope="col">Последняя неделя</th><th scope="col">Лидер</th></tr></thead>
+  <tbody>
+  {% for c in cats %}
+    <tr>
+      <th scope="row"><a href="{{ c.path }}">{{ c.name }}</a></th>
+      <td>{{ 'Wildberries' if c.marketplace == 'wb' else c.marketplace }}</td>
+      <td><a href="{{ c.latest.archive_path }}">{{ c.latest.week }}</a></td>
+      <td>{{ c.latest.brands[0].brand }} — {{ c.latest.brands[0].share | pct }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}
